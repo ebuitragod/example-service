@@ -95,10 +95,6 @@ venv.bak/
 *.csv
 csv_conocimientos
 
-
-# mkdocs documentation
-/site
-
 # mypy
 .mypy_cache/
 .dmypy.json
