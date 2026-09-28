@@ -1,0 +1,25 @@
+FROM python:3.11-slim
+
+ARG USERNAME=vscode
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends ca-certificates sudo \
+ && rm -rf /var/lib/apt/lists/* \
+ && groupadd --gid "$USER_GID" "$USERNAME" \
+ && useradd --uid "$USER_UID" --gid "$USER_GID" --create-home --shell /bin/bash "$USERNAME" \
+ && echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" > "/etc/sudoers.d/$USERNAME" \
+ && chmod 0440 "/etc/sudoers.d/$USERNAME"
+
+WORKDIR /workspace
+
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+USER $USERNAME
+EXPOSE 8000
+CMD ["sleep", "infinity"]

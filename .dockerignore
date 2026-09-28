@@ -1,0 +1,15 @@
+.git
+.devcontainer
+.vscode
+.idea
+.venv
+venv
+__pycache__
+*.py[cod]
+.env
+.env.*
+.gitignore
+.DS_Store
+Dockerfile*
+compose.yaml
+README.md
