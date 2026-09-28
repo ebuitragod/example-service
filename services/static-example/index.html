@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Static example</title>
+</head>
+<body>
+  <main>
+    <h1>Static example</h1>
+    <p>
+      Hola, soy un ejemplo estático para probar reglas que hacen match con el request path mediante una expresión regular.
+    </p>
+    <p lang="de">
+      Hallo, ich bin ein statisches Beispiel, um Regeln zu testen, die mit dem Request-Pfad über einen regulären Ausdruck übereinstimmen.
+    </p>
+
+    <h2>To try a rule in cloudflare</h2>
+    <pre>
+      <code>
+        $ cloudflared tunnel ingress rule https://static.example.com/images/dog.gif
+        Using rules from ~/cloudflared_config.yaml
+        Matched rule #2
+        Hostname: static.example.com
+        path: /images/*\.(jpg|png|gif)
+      </code>
+    </pre>
+
+    <h2>Rule to match</h2>
+    <pre>
+      <code>
+      # Rules can match the request's path to a regular expression:
+    - hostname: static.example.com
+      path: /images/*\.(jpg|png|gif)
+      service: https://machine1.local:3000
+      </code>
+    </pre>
+  </main>
+  <code>
+    docker compose up --build -d --force-recreate static-example
+  </code>
+</body>
+</html>

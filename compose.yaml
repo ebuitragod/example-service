@@ -7,3 +7,45 @@ services:
     ports:
       - "127.0.0.1:${HTTP_PORT:-8080}:8080"
     restart: unless-stopped
+
+  whoami:
+    image: traefik/whoami:v1.10.3
+    ports:
+      - "127.0.0.1:8081:80"
+    restart: unless-stopped
+
+  echo:
+    image: hashicorp/http-echo:1.0.0
+    command: ["-text=hello from the echo service"]
+    ports:
+      - "127.0.0.1:8082:5678"
+    restart: unless-stopped
+
+  static-example:
+    build:
+      context: ./services/static-example
+    image: static-example:local
+    ports:
+      - "127.0.0.1:8083:8080"
+    restart: unless-stopped
+    
+  ssh:
+    image: lscr.io/linuxserver/openssh-server:latest
+    environment:
+      USER_NAME: playground
+      PUBLIC_KEY: ${SSH_PUBLIC_KEY:-}
+      PASSWORD_ACCESS: "false"
+      SUDO_ACCESS: "false"
+    ports:
+      - "127.0.0.1:2222:2222"
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ./services/api
+    image: local-status-api:dev
+    environment:
+      WEB_HOST_PORT: ${HTTP_PORT:-8080}
+    ports:
+      - "127.0.0.1:8084:8000"
+    restart: unless-stopped
