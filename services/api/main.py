@@ -1,41 +1,14 @@
 import asyncio
-import os
 import time
 from datetime import datetime, timezone
 
+from constants import SERVICES, Service
 from fastapi import FastAPI
 
 app = FastAPI(
     title="Local Service Status API", 
     version="0.1.0"
     )
-
-SERVICES = (
-    (
-        "web", "web",
-        8080, os.getenv("WEB_HOST_PORT", "8080")
-    ),
-    (
-        "whoami", "whoami", 
-        80, "8081"
-    ),
-    (
-        "echo", "echo", 
-        5678, "8082"
-    ),
-    (
-        "static-example", "static-example",
-        8080, "8083"
-    ),
-    (
-        "ssh", "ssh", 
-        2222, "2222"
-    ),
-    (
-        "api", "api",
-        8000, "8084"
-    ),
-)
 
 
 async def probe_tcp(
@@ -65,15 +38,12 @@ async def health() -> dict[str, str]:
 
 @app.get("/ports")
 async def ports() -> dict[str, object]:
-    async def inspect(
-        service: tuple[str, str, int, str]
-        ) -> dict[str, object]:
-        name, host, container_port, host_port = service
-        listening, latency_ms = await probe_tcp(host, container_port)
+    async def inspect(service: Service) -> dict[str, object]:
+        listening, latency_ms = await probe_tcp(service.name, service.port)
         return {
-            "service": name,
-            "target": f"{host}:{container_port}",
-            "host_binding": f"127.0.0.1:{host_port}",
+            "service": service.name,
+            "target": f"{service.name}:{service.port}",
+            "host_binding": f"127.0.0.1:{service.host_port}",
             "listening": listening,
             "latency_ms": latency_ms,
         }

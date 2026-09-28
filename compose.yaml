@@ -42,7 +42,7 @@ services:
 
   api:
     build:
-      context: ./api
+      context: ./services/api
     image: local-status-api:dev
     environment:
       WEB_HOST_PORT: ${HTTP_PORT:-8080}
