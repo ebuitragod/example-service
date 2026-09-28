@@ -20,3 +20,14 @@ services:
     ports:
       - "127.0.0.1:8082:5678"
     restart: unless-stopped
+
+  ssh:
+    image: lscr.io/linuxserver/openssh-server:latest
+    environment:
+      USER_NAME: playground
+      PUBLIC_KEY: ${SSH_PUBLIC_KEY:-}
+      PASSWORD_ACCESS: "false"
+      SUDO_ACCESS: "false"
+    ports:
+      - "127.0.0.1:2222:2222"
+    restart: unless-stopped
