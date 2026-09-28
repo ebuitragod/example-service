@@ -23,7 +23,7 @@ services:
 
   static-example:
     build:
-      context: ./site/static-example
+      context: ./services/static-example
     image: static-example:local
     ports:
       - "127.0.0.1:8083:8080"
