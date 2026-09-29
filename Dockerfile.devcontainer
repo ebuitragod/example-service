@@ -14,8 +14,8 @@ RUN apt-get update \
 
 WORKDIR /workspace
 
-COPY requirements.txt /tmp/requirements.txt
-RUN pip install --no-cache-dir -r /tmp/requirements.txt
+COPY services/api/requirements.txt /tmp/api-requirements.txt
+RUN pip install --no-cache-dir -r /tmp/api-requirements.txt
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
