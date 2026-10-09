@@ -1,34 +1,62 @@
 services:
+  cloudflare:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflare_tunnel
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+      - TUNNEL_METRICS=0.0.0.02000
+    networks:
+      - internal_tunnel_net
+    healthcheck:
+      test: ["CMD", "cloudflared", "--version"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
   web:
     build:
       context: .
       dockerfile: Dockerfile
     image: example-service:local
     ports:
-      - "127.0.0.1:${HTTP_PORT:-8080}:8080"
+      - "0.0.0.0:${HTTP_PORT:-8080}:8080"
     restart: unless-stopped
+    networks:
+      - internal_tunnel_net
+      - default
 
   whoami:
     image: traefik/whoami:v1.10.3
     ports:
-      - "127.0.0.1:8081:80"
+      - "0.0.0.0:8081:80"
     restart: unless-stopped
+    networks:
+      - default
+      - internal_tunnel_net
 
   echo:
     image: hashicorp/http-echo:1.0.0
     command: ["-text=hello from the echo service"]
     ports:
-      - "127.0.0.1:8082:5678"
+      - "0.0.0.0:8082:5678"
     restart: unless-stopped
+    networks:
+      - default
+      - internal_tunnel_net
 
   static-example:
     build:
       context: ./services/static-example
     image: static-example:local
     ports:
-      - "127.0.0.1:8083:8080"
+      - "0.0.0.0:8083:8080"
     restart: unless-stopped
-    
+    networks:
+      - default
+      - internal_tunnel_net
+
   ssh:
     image: lscr.io/linuxserver/openssh-server:latest
     environment:
@@ -37,8 +65,11 @@ services:
       PASSWORD_ACCESS: "false"
       SUDO_ACCESS: "false"
     ports:
-      - "127.0.0.1:2222:2222"
+      - "0.0.0.0:2222:2222"
     restart: unless-stopped
+    networks:
+      - default
+      - internal_tunnel_net
 
   api:
     build:
@@ -47,5 +78,13 @@ services:
     environment:
       WEB_HOST_PORT: ${HTTP_PORT:-8080}
     ports:
-      - "127.0.0.1:8084:8000"
+      - "0.0.0.0:8084:8000"
     restart: unless-stopped
+    networks:
+      - default
+      - internal_tunnel_net
+
+networks:
+  internal_tunnel_net:
+    driver: bridge
+    name: internal_tunnel_net  
